@@ -1,4 +1,5 @@
 """API de Solicitudes de Medicamentos  ->  uvicorn main:app --reload --port 8002"""
+import logging
 import math
 import os
 
@@ -7,13 +8,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models import Medication, Request
-from schemas import MedicationOut, Page, RequestCreate, RequestOut
-from security import get_current_user_id
+from errors import configure_logging, register_error_handlers
+
+configure_logging()  # antes de importar database, para que el log del túnel SSH ya tenga formato
+
+from database import get_db  # noqa: E402
+from models import Medication, Request  # noqa: E402
+from schemas import MedicationOut, Page, RequestCreate, RequestOut  # noqa: E402
+from security import get_current_user_id  # noqa: E402
+
+logger = logging.getLogger("app.requests")
 
 app = FastAPI(title="Solicitudes API", version="1.0.0")
 
+register_error_handlers(app)  # debe ir antes de CORSMiddleware (ver errors.py)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")],
@@ -60,6 +68,8 @@ def create_request(
     db.add(request)
     db.commit()
     db.refresh(request)
+    logger.info("Solicitud creada id=%s usuario=%s medicamento=%s (%s)",
+                request.id, user_id, medication.id, "POS" if medication.is_pos else "NO POS")
     return request
 
 

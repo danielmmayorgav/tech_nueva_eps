@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -29,6 +29,6 @@ class Request(Base):
     phone: Mapped[Optional[str]] = mapped_column(String(20))
     email: Mapped[Optional[str]] = mapped_column(String(100))
     # server_default: SQLAlchemy omite la columna en el INSERT y MySQL pone current_timestamp()
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp())
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
 
     medication: Mapped[Medication] = relationship(lazy="joined")
