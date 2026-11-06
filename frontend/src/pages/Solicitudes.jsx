@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { getErrorMessage, solicitudesApi } from '../api/client.js'
 
-const PAGE_SIZE = 5
+// Solicitudes por página, desde VITE_PAGE_SIZE en .env (entre 1 y 100, que es el máximo de la API).
+// Si falta o no es un número válido, se usa 5.
+const envSize = Number.parseInt(import.meta.env.VITE_PAGE_SIZE, 10)
+const PAGE_SIZE = envSize >= 1 && envSize <= 100 ? envSize : 5
 
 export default function Solicitudes() {
   const location = useLocation()

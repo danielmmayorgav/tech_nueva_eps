@@ -31,12 +31,21 @@ solicitudesApi.interceptors.response.use(
   },
 )
 
+const FIELD_LABELS = {
+  name: 'Nombre', lastname: 'Apellido', email: 'Correo', password: 'Contraseña',
+  order_number: 'Número de orden', address: 'Dirección', phone: 'Teléfono',
+}
+
 // Convierte cualquier error de axios/FastAPI en un mensaje legible
 export function getErrorMessage(error) {
   const detail = error.response?.data?.detail
   if (typeof detail === 'string') return detail
   // Errores de validación de Pydantic: lista de { loc, msg }
-  if (Array.isArray(detail)) return detail.map((d) => `${d.loc.at(-1)}: ${d.msg}`).join(' · ')
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) => `${FIELD_LABELS[d.loc.at(-1)] ?? d.loc.at(-1)}: ${d.msg.replace(/^Value error, /, '')}`)
+      .join(' · ')
+  }
   if (!error.response) return 'No se pudo conectar con el servidor'
   return 'Ocurrió un error inesperado'
 }
