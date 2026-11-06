@@ -18,6 +18,18 @@ mysql -u root -p --default-character-set=utf8mb4 < database/schema.sql
 ```
 Crea las tablas `users`, `medications` y `requests`, y carga medicamentos de ejemplo (POS y NO POS).
 
+### Conexión por túnel SSH (servidor remoto)
+Si MySQL está en un servidor al que se entra por SSH (como en DBeaver con *Use SSH Tunnel*), las APIs abren el túnel solas. Se configura en el `.env`:
+```
+SSH_HOST=ip-del-servidor      SSH_USER=ubuntu      SSH_PRIVATE_KEY=C:\ruta\llave.pem
+DB_HOST=127.0.0.1             # host de MySQL visto DESDE el servidor SSH
+```
+La llave debe estar en formato OpenSSH. Una `.ppk` de PuTTY se convierte una vez con:
+```bash
+puttygen llave.ppk -O private-openssh -o llave.pem
+```
+Para conectarse directo (sin túnel), dejar `SSH_HOST` vacío.
+
 ## 2. APIs (repetir en `auth_api` y `solicitudes_api`)
 ```bash
 cd auth_api
