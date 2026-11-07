@@ -1,16 +1,15 @@
 """Configuración común de los tests de la API de autenticación.
 
-Los tests NO usan MySQL ni el túnel SSH: corren contra SQLite en memoria, que se crea
+Los tests NO usan MySQL: corren contra SQLite en memoria, que se crea
 vacío antes de cada test y se descarta al terminar. Así son rápidos, repetibles y no
 ensucian la base real.
 """
 import os
 
 # Estas variables deben existir ANTES de importar la app. load_dotenv() no sobrescribe
-# variables ya definidas, así que el .env real (MySQL, SSH) queda ignorado.
+# variables ya definidas, así que el .env real (MySQL) queda ignorado.
 os.environ.update({
     "DATABASE_URL": "sqlite://",
-    "SSH_HOST": "",
     "SECRET_KEY": "clave-solo-para-tests",
     "LOG_LEVEL": "WARNING",
 })

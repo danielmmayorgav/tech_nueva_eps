@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from errors import configure_logging, register_error_handlers
 
-configure_logging()  # antes de importar database, para que el log del túnel SSH ya tenga formato
+configure_logging()  # antes de importar el resto, para que sus logs ya tengan formato
 
 from database import get_db  # noqa: E402
 from models import Medication, Request  # noqa: E402

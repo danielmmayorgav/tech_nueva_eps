@@ -2,6 +2,9 @@
 --  Base de datos: tech_nueva_eps  (MySQL / MariaDB)
 --  Ejecutar:  mysql -u root -p < database/schema.sql
 -- =============================================================
+-- El archivo está en UTF-8: sin esto, los acentos se guardan dañados (p. ej. "Ã©")
+SET NAMES utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS tech_nueva_eps;
 USE tech_nueva_eps;
 

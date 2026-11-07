@@ -1,12 +1,13 @@
 """Hash de contraseñas (bcrypt) y emisión de tokens JWT."""
 import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import bcrypt
 import jwt
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")  # .env único en la raíz
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"

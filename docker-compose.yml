@@ -1,0 +1,71 @@
+# Levanta toda la aplicación:  docker compose up -d --build
+# Configuración: un único archivo .env en la raíz (copiar de .env.example).
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+      # Solo se ejecuta la primera vez (cuando el volumen está vacío)
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    ports:
+      - "${DB_EXPOSED_PORT:-3306}:3306"   # para conectarse desde DBeaver u otro cliente
+    healthcheck:
+      # Por TCP: durante la inicialización MySQL corre sin red, así que esto solo pasa
+      # cuando el esquema ya se cargó y el servidor definitivo está arriba.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  auth_api:
+    build: ./auth_api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Dentro de Docker la BD es el servicio "db"
+      DB_HOST: db
+      DB_PORT: 3306
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8001:8001"
+
+  solicitudes_api:
+    build: ./solicitudes_api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8002:8002"
+
+  frontend:
+    build:
+      context: ./frontend
+      # Vite incrusta estas variables en el JS al compilar; las URLs son las que ve el navegador
+      args:
+        VITE_AUTH_API_URL: ${VITE_AUTH_API_URL:-http://localhost:8001}
+        VITE_SOLICITUDES_API_URL: ${VITE_SOLICITUDES_API_URL:-http://localhost:8002}
+        VITE_PAGE_SIZE: ${VITE_PAGE_SIZE:-5}
+    restart: unless-stopped
+    depends_on:
+      - auth_api
+      - solicitudes_api
+    ports:
+      - "5173:80"
+
+volumes:
+  db_data:

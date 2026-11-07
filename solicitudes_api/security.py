@@ -1,12 +1,13 @@
 """Validación del token JWT emitido por la API de autenticación."""
 import os
+from pathlib import Path
 
 import jwt
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")  # .env único en la raíz
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"

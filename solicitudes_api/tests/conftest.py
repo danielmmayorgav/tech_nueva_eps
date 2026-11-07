@@ -1,6 +1,6 @@
 """Configuración común de los tests de la API de solicitudes.
 
-Los tests NO usan MySQL ni el túnel SSH: corren contra SQLite en memoria, que se crea
+Los tests NO usan MySQL: corren contra SQLite en memoria, que se crea
 vacío (con un catálogo pequeño de medicamentos) antes de cada test.
 """
 import os
@@ -8,7 +8,6 @@ from datetime import datetime, timedelta, timezone
 
 os.environ.update({
     "DATABASE_URL": "sqlite://",
-    "SSH_HOST": "",
     "SECRET_KEY": "clave-solo-para-tests",
     "LOG_LEVEL": "WARNING",
 })
