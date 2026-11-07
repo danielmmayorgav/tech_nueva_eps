@@ -85,3 +85,5 @@ pytest
 - **Microservicios**: cada API es un proceso independiente. Comparten la BD, pero `solicitudes_api` no consulta la tabla `users`: confía en el `sub` del JWT firmado.
 - **Regla NO POS**: se valida en el frontend (UX) **y** en el backend (seguridad), porque el frontend se puede saltar.
 - **Paginación** en servidor con `OFFSET/LIMIT`; la respuesta incluye `total` y `pages`.
+- **Diagrama entidad - relación**: en la carpeta `docs/diagrama_entidad_relacion` se encontrara el diagrama de las tablas users, requests y medications, con sus  atributos y relaciones.
+- **Casos de uso**: en la carpeta `docs/casos_de_uso` se encuentra el caso de uso general del sistema, donde se aprecian el registro del  usuario, inicio de sesión y el registro de solicitudes.
