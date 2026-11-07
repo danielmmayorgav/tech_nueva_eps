@@ -52,6 +52,30 @@ npm run dev
 ```
 Abrir http://localhost:5173
 
+## Tests
+Cada API tiene sus propios tests (pytest). Corren contra SQLite en memoria, así que **no necesitan MySQL ni el túnel SSH** y no modifican la base real.
+```bash
+cd auth_api            # o solicitudes_api
+pip install -r requirements-dev.txt
+pytest
+```
+| API | Tests | Qué cubren |
+|---|---|---|
+| `auth_api` | 28 | Registro (hash bcrypt, email duplicado, nombre solo letras, validaciones), login (JWT válido, credenciales inválidas sin revelar qué falló), manejo de errores |
+| `solicitudes_api` | 41 | Token ausente/inválido/expirado, regla POS / NO POS y sus campos obligatorios, formatos, paginación, aislamiento entre usuarios |
+
+## Logs y manejo de errores
+- Cada petición queda registrada: `POST /requests -> 201 (35 ms)`. Nivel configurable con `LOG_LEVEL` en el `.env`.
+- Eventos de negocio: registro, login exitoso/fallido (sin registrar contraseñas), solicitud creada.
+- Los errores de base de datos se traducen a respuestas claras sin exponer SQL ni datos internos:
+
+| Error | HTTP | Ejemplo |
+|---|---|---|
+| `IntegrityError` | 409 | Restricción única o llave foránea violada |
+| `DataError` | 422 | Valor demasiado largo o fuera de rango |
+| `OperationalError` | 503 | MySQL o el túnel SSH no responden |
+| Cualquier otro | 500 | Error inesperado (la traza completa queda en el log) |
+
 ## Endpoints
 
 ### Auth API (8001)
